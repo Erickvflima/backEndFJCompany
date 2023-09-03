@@ -3,11 +3,17 @@
     "browser": true,
     "es2021": true
   },
-  "extends": "airbnb-base",
+  "extends": ["plugin:prettier/recommended", "airbnb-base"],
   "parserOptions": {
     "ecmaVersion": 2021,
     "sourceType": "module"
   },
+  "plugins": [
+    "prettier",
+    "eslint-plugin-import-helpers",
+    "prefer-arrow",
+    "import"
+  ],
   "settings": {
     "import/extensions": [".js"],
     "import/resolver": {
@@ -20,6 +26,7 @@
   "rules": {
     "import/no-unresolved": "off",
     "no-console": "off",
-    "import/extensions": "off"
+    "import/extensions": "off",
+    "prettier/prettier": "error"
   }
 }

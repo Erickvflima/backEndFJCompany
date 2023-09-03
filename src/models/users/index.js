@@ -1,6 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-// eslint-disable-next-line import/no-extraneous-dependencies
-// import bcrypt from 'bcrypt';
 import DataBase from '../../dataBase/index.js';
 
 export const postSignin = async ({ cpf }) => {
@@ -34,7 +31,7 @@ export const postSignup = async ({
 }) => {
   const instance = DataBase.getInstance().data.request();
   const query = `
-  insert into"user" ( name, cpf, "typeOfAccess", "teamId", status )
+  insert into "user" ( name, cpf, "typeOfAccess", "teamId", status )
   values ( @name, @cpf, @typeOfAccess, @teamId, @status );`;
 
   instance.input('cpf', cpf);
@@ -58,4 +55,89 @@ export const postSignup = async ({
     message: 'Erro ao cadastrar usuario',
     rowsAffected,
   };
+};
+
+export const getList = async payload => {
+  const instance = DataBase.getInstance().data.request();
+
+  let query = 'SELECT * FROM "user"';
+
+  if (payload.status) {
+    query += ' WHERE status = @statusList';
+    instance.input('statusList', payload.status);
+  }
+
+  if (payload.cpf) {
+    query += payload.status ? ' AND cpf = @cpfList' : ' WHERE cpf = @cpfList';
+    instance.input('cpfList', payload.cpf);
+  }
+  instance.input('status', payload.status);
+  const { recordset, rowsAffected } = await instance.query(query);
+
+  return {
+    status: 'success',
+    message: 'Lista retornada com sucesso.',
+    document: recordset,
+    rowsAffected,
+  };
+};
+
+export const patchUser = async (cpf, payload) => {
+  try {
+    const instance = DataBase.getInstance().data.request();
+
+    if (!cpf) {
+      return {
+        status: 'error',
+        message: 'CPF do usuário não informado.',
+      };
+    }
+    const validCpf = await getList({ cpf: cpf });
+
+    if (validCpf.rowsAffected[0] === 0) {
+      return {
+        status: 'error',
+        message: 'CPF não esta cadastrado em nossa base.',
+      };
+    }
+
+    if (!payload || Object.keys(payload).length === 0) {
+      return {
+        status: 'error',
+        message: 'Nenhum dado de atualização fornecido.',
+      };
+    }
+
+    let query = 'UPDATE "user" SET ';
+
+    const setStatements = Object.keys(payload)
+      .filter(field => field !== 'cpf')
+      .map(field => {
+        instance.input(field, payload[field]);
+        return `"${field}" = @${field}`;
+      })
+      .join(', ');
+
+    query += setStatements + ` WHERE "cpf" = @cpf;`;
+
+    instance.input('cpf', cpf);
+
+    const queryResult = await instance.query(query);
+
+    const newData = await getList({ cpf: cpf, status: payload.status });
+    if (queryResult.rowsAffected[0] === 1) {
+      return {
+        status: 'success',
+        message: 'Usuário atualizado com sucesso.',
+        document: newData.document[0],
+        rowsAffected: queryResult.rowsAffected,
+      };
+    }
+    return {
+      status: 'error',
+      message: 'Erro ao atualizar o usuário.',
+    };
+  } catch (error) {
+    throw error;
+  }
 };
