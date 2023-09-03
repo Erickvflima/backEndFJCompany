@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { postSignin, postSignup } from '../../models/users/index.js';
+import {
+  getList,
+  patchUser,
+  postSignin,
+  postSignup,
+} from '../../models/users/index.js';
 import 'dotenv/config';
 
 const router = Router();
@@ -59,5 +64,30 @@ router.post(
     }
   },
 );
+router.get('/list', async (req, res, next) => {
+  try {
+    const response = await getList(req.query);
+    res.send(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(502).send({
+      status: 'error',
+      message: 'Contate o suporte.',
+    });
+  }
+});
+
+router.patch('/changeData', async (req, res, next) => {
+  try {
+    const response = await patchUser(req.query.cpf, req.query);
+    res.send(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(502).send({
+      status: 'error',
+      message: 'Contate o suporte.',
+    });
+  }
+});
 
 export default router;
