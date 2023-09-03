@@ -2,7 +2,7 @@ import DataBase from '../../dataBase/index.js';
 
 export const postSignin = async ({ cpf }) => {
   const instance = DataBase.getInstance().data.request();
-  const query = 'SELECT * FROM "user" where cpf = @cpf';
+  const query = `SELECT * FROM "user" where cpf = @cpf and status = 'Ativo'`;
   instance.input('cpf', cpf);
 
   const { rowsAffected } = await instance.query(query);

@@ -58,6 +58,7 @@ router.post(
         const response = await postSignup(req.query);
         res.send(response);
       } else if (req.query.typeOfAccess === 'Lider') {
+        // somente administrador podera criar lider
         if (req.query.nameTeam && req.query.statusTeam) {
           const resultTeam = await postTeam({
             name: req.query.nameTeam,
