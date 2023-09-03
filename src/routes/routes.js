@@ -1,11 +1,10 @@
 import { Router } from 'express';
-// import users, { routersSignin } from '@controllers/users/routes';
-// eslint-disable-next-line import/extensions
 import validation from '../controllers/validation.js';
+import user from '../controllers/user/index.js';
 
 const router = Router();
 
-// router.use('/', routersSignin);
 router.use('/validation', validation);
+router.use('/user', user);
 
 export default router;

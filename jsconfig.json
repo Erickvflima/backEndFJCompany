@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@dataBase/*": ["dataBase/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}
