@@ -1,16 +1,41 @@
 import DataBase from '../../dataBase/index.js';
 
+export const getList = async payload => {
+  const instance = DataBase.getInstance().data.request();
+
+  let query = 'SELECT * FROM "user"';
+
+  if (payload.status) {
+    query += ' WHERE status = @statusList';
+    instance.input('statusList', payload.status);
+  }
+
+  if (payload.cpf) {
+    query += payload.status ? ' AND cpf = @cpfList' : ' WHERE cpf = @cpfList';
+    instance.input('cpfList', payload.cpf);
+  }
+  instance.input('status', payload.status);
+  const { recordset, rowsAffected } = await instance.query(query);
+
+  return {
+    status: 'success',
+    message: 'Lista retornada com sucesso.',
+    document: recordset,
+    rowsAffected,
+  };
+};
 export const postSignin = async ({ cpf }) => {
   const instance = DataBase.getInstance().data.request();
   const query = `SELECT * FROM "user" where cpf = @cpf and status = 'Ativo'`;
   instance.input('cpf', cpf);
 
-  const { rowsAffected } = await instance.query(query);
-  // if (result.rowsAffected[0] === 1 && bcrypt.compareSync(cpf, result[0].cpf)) {
+  const { rowsAffected, recordset } = await instance.query(query);
+
   if (rowsAffected[0] === 1) {
     return {
       status: 'success',
       message: 'Usuario cadastrado e ativo.',
+      document: recordset[0],
       rowsAffected,
     };
   }
@@ -30,6 +55,15 @@ export const postSignup = async ({
   status,
 }) => {
   const instance = DataBase.getInstance().data.request();
+  const validCpf = await getList({ cpf: cpf });
+
+  if (validCpf.rowsAffected[0] > 0) {
+    return {
+      status: 'error',
+      message: 'CPF já esta cadastrado em nossa base.',
+    };
+  }
+
   const query = `
   insert into "user" ( name, cpf, "typeOfAccess", "teamId", status )
   values ( @name, @cpf, @typeOfAccess, @teamId, @status );`;
@@ -53,31 +87,6 @@ export const postSignup = async ({
   return {
     status: 'error',
     message: 'Erro ao cadastrar usuario',
-    rowsAffected,
-  };
-};
-
-export const getList = async payload => {
-  const instance = DataBase.getInstance().data.request();
-
-  let query = 'SELECT * FROM "user"';
-
-  if (payload.status) {
-    query += ' WHERE status = @statusList';
-    instance.input('statusList', payload.status);
-  }
-
-  if (payload.cpf) {
-    query += payload.status ? ' AND cpf = @cpfList' : ' WHERE cpf = @cpfList';
-    instance.input('cpfList', payload.cpf);
-  }
-  instance.input('status', payload.status);
-  const { recordset, rowsAffected } = await instance.query(query);
-
-  return {
-    status: 'success',
-    message: 'Lista retornada com sucesso.',
-    document: recordset,
     rowsAffected,
   };
 };
