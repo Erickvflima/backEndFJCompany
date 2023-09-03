@@ -35,6 +35,7 @@ router.post(
         res.send({
           status,
           message,
+          document: response.document,
           user: req.params.cpf,
           token,
         });
@@ -64,6 +65,7 @@ router.post(
             name: req.query.nameTeam,
             status: req.query.statusTeam,
           });
+
           req.query.teamId = resultTeam.document[0].id;
           const response = await postSignup(req.query);
           res.send(response);
@@ -74,6 +76,11 @@ router.post(
               'Variaveis nome da equipe e status da equipe não recebidos.',
           });
         }
+      } else {
+        res.status(402).send({
+          status: 'error',
+          message: 'Tipo de acesso ainda nao foi tratado.',
+        });
       }
     } catch (error) {
       res.status(502).send({
