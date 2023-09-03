@@ -63,6 +63,9 @@ router.post(
             name: req.query.nameTeam,
             status: req.query.statusTeam,
           });
+          req.query.teamId = resultTeam.document[0].id;
+          const response = await postSignup(req.query);
+          res.send(response);
         } else {
           res.status(402).send({
             status: 'error',

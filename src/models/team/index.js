@@ -29,6 +29,14 @@ export const getList = async payload => {
 
 export const postTeam = async ({ name, status }) => {
   const instance = DataBase.getInstance().data.request();
+  const validNameTeam = await getList({ name: name });
+
+  if (validNameTeam.rowsAffected[0] === 1) {
+    return {
+      status: 'error',
+      message: 'Nome de equipe já esta cadastrada.',
+    };
+  }
   const query = `insert into "team" ( name, status )
   values ( @nameTeam, @statusTeam );`;
 
@@ -37,10 +45,13 @@ export const postTeam = async ({ name, status }) => {
 
   const { rowsAffected } = await instance.query(query);
 
+  const resultTeam = await getList({ name: name });
+
   if (rowsAffected[0] === 1) {
     return {
       status: 'success',
       message: 'Equipe cadastrada com sucesso.',
+      document: resultTeam.document,
       rowsAffected,
     };
   }
