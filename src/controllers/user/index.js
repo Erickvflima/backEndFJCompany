@@ -5,8 +5,9 @@ import {
   patchUser,
   postSignin,
   postSignup,
-} from '../../models/users/index.js';
+} from '../../models/user/index.js';
 import 'dotenv/config';
+import { postTeam } from '../../models/team/index.js';
 
 const router = Router();
 
@@ -53,8 +54,23 @@ router.post(
 
   async (req, res, next) => {
     try {
-      const response = await postSignup(req.query);
-      res.send(response);
+      if (req.query.typeOfAccess === 'Colaborador') {
+        const response = await postSignup(req.query);
+        res.send(response);
+      } else if (req.query.typeOfAccess === 'Lider') {
+        if (req.query.nameTeam && req.query.statusTeam) {
+          const resultTeam = await postTeam({
+            name: req.query.nameTeam,
+            status: req.query.statusTeam,
+          });
+        } else {
+          res.status(402).send({
+            status: 'error',
+            message:
+              'Variaveis nome da equipe e status da equipe não recebidos.',
+          });
+        }
+      }
     } catch (error) {
       res.status(502).send({
         status: 'error',
@@ -64,7 +80,7 @@ router.post(
     }
   },
 );
-router.get('/list', async (req, res, next) => {
+router.get('/list', async (req, res) => {
   try {
     const response = await getList(req.query);
     res.send(response);
@@ -77,12 +93,11 @@ router.get('/list', async (req, res, next) => {
   }
 });
 
-router.patch('/changeData', async (req, res, next) => {
+router.patch('/changeData', async (req, res) => {
   try {
     const response = await patchUser(req.query.cpf, req.query);
     res.send(response);
   } catch (error) {
-    console.log(error);
     return res.status(502).send({
       status: 'error',
       message: 'Contate o suporte.',
