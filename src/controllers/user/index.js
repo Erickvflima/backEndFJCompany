@@ -55,6 +55,7 @@ router.post(
 
   async (req, res, next) => {
     try {
+      console.log(req.query);
       if (req.query.typeOfAccess === 'Colaborador') {
         const response = await postSignup(req.query);
         res.send(response);
