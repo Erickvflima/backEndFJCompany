@@ -50,39 +50,59 @@ export const deleteMessage = async payload => {
     };
   }
 };
+export const postMessage = async payload => {
+  const instance = DataBase.getInstance().data.request();
 
-// export const postTeam = async ({ name, status }) => {
-//   const instance = DataBase.getInstance().data.request();
-//   const validNameTeam = await getList({ name: name });
+  const query = ` insert into 
+  message ( description, "teamId", status )
+  values ( @description, @teamId, @status );`;
 
-//   if (validNameTeam.rowsAffected[0] === 1) {
-//     return {
-//       status: 'error',
-//       message: 'Nome de equipe já esta cadastrada.',
-//     };
-//   }
-//   const query = `insert into "team" ( name, status )
-//   values ( @nameTeam, @statusTeam );`;
+  instance.input('description', payload.description);
+  instance.input('teamId', payload.teamId);
+  instance.input('status', payload.status);
+  const { recordset, rowsAffected } = await instance.query(query);
+  if (rowsAffected[0] > 0) {
+    return {
+      status: 'success',
+      message: 'Mensagem inserida com sucesso.',
+      document: recordset,
+      rowsAffected,
+    };
+  } else {
+    return {
+      status: 'error',
+      message: 'Erro ao inserir mensagem.',
+      document: recordset,
+      rowsAffected,
+    };
+  }
+};
 
-//   instance.input('nameTeam', name);
-//   instance.input('statusTeam', status);
+export const putMessage = async payload => {
+  const instance = DataBase.getInstance().data.request();
 
-//   const { rowsAffected } = await instance.query(query);
+  const query = `update message set 
+  description = @description,
+  status = @status where 
+  id = @id`;
 
-//   const resultTeam = await getList({ name: name });
-
-//   if (rowsAffected[0] === 1) {
-//     return {
-//       status: 'success',
-//       message: 'Equipe cadastrada com sucesso.',
-//       document: resultTeam.document,
-//       rowsAffected,
-//     };
-//   }
-
-//   return {
-//     status: 'error',
-//     message: 'Erro ao cadastrar equipe',
-//     rowsAffected,
-//   };
-// };
+  instance.input('id', payload.id);
+  instance.input('description', payload.description);
+  instance.input('status', payload.status);
+  const { recordset, rowsAffected } = await instance.query(query);
+  if (rowsAffected[0] > 0) {
+    return {
+      status: 'success',
+      message: 'Mensagem alterada com sucesso.',
+      document: recordset,
+      rowsAffected,
+    };
+  } else {
+    return {
+      status: 'error',
+      message: 'Nenhuma mensagem foi encontrada.',
+      document: recordset,
+      rowsAffected,
+    };
+  }
+};
