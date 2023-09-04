@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import jwt from 'jsonwebtoken';
-import { getList } from '../../models/message/index.js';
+import { deleteMessage, getList } from '../../models/message/index.js';
 import 'dotenv/config';
 // import { postTeam } from '../../models/team/index.js';
 
@@ -9,6 +8,18 @@ const router = Router();
 router.get('/list', async (req, res) => {
   try {
     const response = await getList(req.query);
+    res.send(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(502).send({
+      status: 'error',
+      message: 'Contate o suporte.',
+    });
+  }
+});
+router.delete('/', async (req, res) => {
+  try {
+    const response = await deleteMessage(req.query);
     res.send(response);
   } catch (error) {
     console.log(error);
