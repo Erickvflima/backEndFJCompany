@@ -27,6 +27,30 @@ export const getList = async payload => {
   };
 };
 
+export const deleteMessage = async payload => {
+  const instance = DataBase.getInstance().data.request();
+
+  const query = 'Delete FROM "message" where id = @idMessage';
+
+  instance.input('idMessage', payload.id);
+  const { recordset, rowsAffected } = await instance.query(query);
+  if (rowsAffected[0] > 0) {
+    return {
+      status: 'success',
+      message: 'Mensagem deletada com sucesso.',
+      document: recordset,
+      rowsAffected,
+    };
+  } else {
+    return {
+      status: 'error',
+      message: 'Nenhuma mensagem foi deletada.',
+      document: recordset,
+      rowsAffected,
+    };
+  }
+};
+
 // export const postTeam = async ({ name, status }) => {
 //   const instance = DataBase.getInstance().data.request();
 //   const validNameTeam = await getList({ name: name });
