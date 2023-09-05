@@ -1,29 +1,30 @@
-const axios = require('axios');
+import axios from 'axios';
 
-// Substitua 'YOUR_DEEPL_API_KEY' pela sua chave de API do DeepL
-const DEEPL_API_KEY = 'YOUR_DEEPL_API_KEY';
-
-async function translateTextWithDeepL(text, sourceLang, targetLang) {
+export const postText = async text => {
   try {
     const response = await axios.post(
-      'https://api.deepl.com/v2/translate',
+      'https://api.openai.com/v1/chat/completions',
       {
-        text: text,
-        source_lang: sourceLang, // Idioma de origem (por exemplo, 'EN' para inglês)
-        target_lang: targetLang, // Idioma de destino (por exemplo, 'PT' para português)
+        model: 'gpt-3.5-turbo-0613',
+        messages: [
+          {
+            role: 'user',
+            content: `Traduza a menssagem ,${text}, para portugues.`,
+          },
+        ],
+        temperature: 0.2,
       },
       {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'DeepL-Auth-Key': DEEPL_API_KEY, // Sua chave de API do DeepL
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.ACCESS_KEY_OPENIA}`,
         },
       },
     );
 
-    // A resposta da API contém a tradução
-    return response.data.translations[0].text;
+    return response.data.choices[0].message.content;
   } catch (error) {
-    console.error('Erro ao traduzir texto com DeepL:', error);
+    console.error('Erro ao traduzir texto:', error);
     return 'Erro na tradução';
   }
-}
+};
