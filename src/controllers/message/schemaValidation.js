@@ -4,8 +4,12 @@ export const listMessageSchema = Joi.object({
   teamId: Joi.number().allow('null'),
   status: Joi.string().valid('Ativo', 'Inativo').trim().allow('null'),
 });
-export const deleteMessageSchema = Joi.object({
+export const idMessageSchema = Joi.object({
   id: Joi.number().required(),
+});
+export const randomMessageSchema = Joi.object({
+  id: Joi.number().required(),
+  date: Joi.date().required(),
 });
 export const changeMessageSchema = Joi.object({
   teamId: Joi.number().required(),

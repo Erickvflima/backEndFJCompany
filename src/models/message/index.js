@@ -111,9 +111,55 @@ export const putMessage = async payload => {
 };
 
 export const randomMessage = async payload => {
-  const result = await getMessageAdvice();
+  const instance = DataBase.getInstance().data.request();
+  const queryCountSelect = ` SELECT count(*) as count FROM "logRandomMessage" where userId = @userId and createdAt = @dateRequest;`;
+
+  instance.input('dateRequest', payload.date);
+  instance.input('userId', payload.id);
+
+  const resultCount = await instance.query(queryCountSelect);
+  console.log(resultCount);
+
+  if (resultCount.recordset[0].count > 3) {
+    return {
+      status: 'error',
+      message: 'quantidade de menssagens por dia ja esgotado.',
+      rowsAffected: resultCount.recordset[0].count,
+    };
+  } else {
+    let retryCount = 0;
+    const maxRetries = 8;
+    while (retryCount < maxRetries) {
+      const resultMessage = await getMessageAdvice();
+
+      const querySelect = ` SELECT "messageId" FROM "logRandomMessage" 
+      where messageId = @idRandon and createdAt = @dateRequest and userId = @userId;`;
+      instance.input('idRandon', resultMessage.idRandom);
+      const resultSelect = await instance.query(querySelect);
+
+      if (resultSelect.rowsAffected[0] === 0) {
+        const queryInsert = `Insert into "logRandomMessage" ("userId", "messageId", "createdAt" )
+        values ( @userId, @messageId, @dateRequest );`;
+        instance.input('messageId', resultMessage.idRandom);
+
+        const resultInsert = await instance.query(queryInsert);
+        if (resultInsert.rowsAffected[0] === 1) {
+          return {
+            status: 'success',
+            message: 'Mensagem buscada com sucesso',
+            document: {
+              ptBr: resultMessage.messageRandom,
+              en: resultMessage.messageRandom,
+            },
+          };
+        }
+      }
+      retryCount++;
+    }
+  }
+
   return {
-    status: 'success',
-    message: result,
+    status: 'error',
+    message: 'Erro ao gerar mensagem da sorte.',
   };
 };
