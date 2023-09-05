@@ -3,20 +3,24 @@ import DataBase from '../../dataBase/index.js';
 export const getList = async payload => {
   const instance = DataBase.getInstance().data.request();
 
-  let query = 'SELECT * FROM "message"';
+  let query = `
+  SELECT m.*, u.name as nameUser FROM "message" AS m
+  INNER JOIN "user" AS u ON m.teamId = u.teamId`;
 
   if (payload.status) {
-    query += ' WHERE status = @statusList';
+    query += ' WHERE m.status = @statusList';
     instance.input('statusList', payload.status);
   }
 
   if (payload.teamId) {
     query += payload.status
-      ? ' AND teamId = @teamId'
-      : ' WHERE teamId = @teamId';
+      ? ' AND m.teamId = @teamId'
+      : ' WHERE m.teamId = @teamId';
     instance.input('teamId', payload.teamId);
   }
   instance.input('status', payload.status);
+
+  console.log(query);
   const { recordset, rowsAffected } = await instance.query(query);
 
   return {
