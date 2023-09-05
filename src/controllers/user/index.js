@@ -9,48 +9,49 @@ import {
 import 'dotenv/config';
 import { postTeam } from '../../models/team/index.js';
 import verifyAuthToken from '../../middleware/auth.js';
+import { signinSchema, listUsersSchema } from './schemaValidation.js';
+import createValidatorMiddleware from '../../middleware/createValidatorMiddleware.js';
 
 const router = Router();
 
-router.post(
-  '/signin',
+const signinValidation = createValidatorMiddleware(signinSchema);
+const listValidation = createValidatorMiddleware(listUsersSchema);
 
-  async (req, res, next) => {
-    try {
-      const response = await postSignin(req.query);
+router.post('/signin', signinValidation, async (req, res, next) => {
+  try {
+    const response = await postSignin(req.query);
 
-      if (response.status === 'success') {
-        const { cpf } = req.params;
-        if (!process.env.ACCESS_TOKEN_SECRET) {
-          console.log(
-            `Falha ao tentar logar o usuário ${req.params.cpf}, token secreto falhou`,
-          );
-          throw new Error('Fail to find token secret');
-        }
-
-        const token = jwt.sign({ cpf }, process.env.ACCESS_TOKEN_SECRET, {
-          expiresIn: process.env.EXPIRE_TOKEN_SECRET,
-        });
-
-        const { message, status } = response;
-        res.send({
-          status,
-          message,
-          document: response.document,
-          user: req.params.cpf,
-          token,
-        });
-      } else {
+    if (response.status === 'success') {
+      const { cpf } = req.params;
+      if (!process.env.ACCESS_TOKEN_SECRET) {
         console.log(
-          `Falha ao tentar logar o usuário ${req.params.cpf}, usuário ou senha invalido`,
+          `Falha ao tentar logar o usuário ${req.params.cpf}, token secreto falhou`,
         );
-        res.status(401).send(response);
+        throw new Error('Fail to find token secret');
       }
-    } catch (error) {
-      next(error);
+
+      const token = jwt.sign({ cpf }, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: process.env.EXPIRE_TOKEN_SECRET,
+      });
+
+      const { message, status } = response;
+      res.send({
+        status,
+        message,
+        document: response.document,
+        user: req.params.cpf,
+        token,
+      });
+    } else {
+      console.log(
+        `Falha ao tentar logar o usuário ${req.params.cpf}, usuário ou senha invalido`,
+      );
+      res.status(401).send(response);
     }
-  },
-);
+  } catch (error) {
+    next(error);
+  }
+});
 router.post(
   '/signup',
 
@@ -93,7 +94,7 @@ router.post(
     }
   },
 );
-router.get('/list', verifyAuthToken, async (req, res) => {
+router.get('/list', listValidation, verifyAuthToken, async (req, res) => {
   try {
     const response = await getList(req.query);
     res.send(response);

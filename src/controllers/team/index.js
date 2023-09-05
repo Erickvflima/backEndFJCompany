@@ -6,7 +6,7 @@ import verifyAuthToken from '../../middleware/auth.js';
 
 const router = Router();
 
-router.get('/list', verifyAuthToken, async (req, res) => {
+router.get('/list', async (req, res) => {
   try {
     const response = await getList(req.query);
     res.send(response);
