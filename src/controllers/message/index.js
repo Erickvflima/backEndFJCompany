@@ -11,15 +11,17 @@ import verifyAuthToken from '../../middleware/auth.js';
 import {
   listMessageSchema,
   changeMessageSchema,
-  deleteMessageSchema,
+  idMessageSchema,
   newMessageSchema,
+  randomMessageSchema,
 } from './schemaValidation.js';
 import createValidatorMiddleware from '../../middleware/createValidatorMiddleware.js';
 
 const router = Router();
 
 const listValidation = createValidatorMiddleware(listMessageSchema);
-const deleteValidation = createValidatorMiddleware(deleteMessageSchema);
+const idValidation = createValidatorMiddleware(idMessageSchema);
+const randomValidation = createValidatorMiddleware(randomMessageSchema);
 const changeValidation = createValidatorMiddleware(changeMessageSchema);
 const creteValidation = createValidatorMiddleware(newMessageSchema);
 
@@ -35,20 +37,26 @@ router.get('/list', listValidation, verifyAuthToken, async (req, res) => {
     });
   }
 });
-router.get('/randomMessage', verifyAuthToken, async (req, res) => {
-  try {
-    const response = await randomMessage(req.query);
-    res.send(response);
-  } catch (error) {
-    console.log(error);
-    return res.status(502).send({
-      status: 'error',
-      message: 'Contate o suporte.',
-    });
-  }
-});
 
-router.delete('/', deleteValidation, verifyAuthToken, async (req, res) => {
+router.get(
+  '/randomMessage',
+  randomValidation,
+  verifyAuthToken,
+  async (req, res) => {
+    try {
+      const response = await randomMessage(req.query);
+      res.send(response);
+    } catch (error) {
+      console.log(error);
+      return res.status(502).send({
+        status: 'error',
+        message: 'Contate o suporte.',
+      });
+    }
+  },
+);
+
+router.delete('/', idValidation, verifyAuthToken, async (req, res) => {
   try {
     const response = await deleteMessage(req.query);
     res.send(response);
