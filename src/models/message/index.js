@@ -4,18 +4,17 @@ export const getList = async payload => {
   const instance = DataBase.getInstance().data.request();
 
   let query = `
-  SELECT m.*, u.name as nameUser FROM "message" AS m
-  INNER JOIN "user" AS u ON m.teamId = u.teamId`;
+  SELECT *FROM "message" `;
 
   if (payload.status) {
-    query += ' WHERE m.status = @statusList';
+    query += ' WHERE message.status = @statusList';
     instance.input('statusList', payload.status);
   }
 
   if (payload.teamId) {
     query += payload.status
-      ? ' AND m.teamId = @teamId'
-      : ' WHERE m.teamId = @teamId';
+      ? ' AND message.teamId = @teamId'
+      : ' WHERE message.teamId = @teamId';
     instance.input('teamId', payload.teamId);
   }
   instance.input('status', payload.status);
