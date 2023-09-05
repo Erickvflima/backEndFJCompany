@@ -1,5 +1,6 @@
 import getMessageAdvice from '.././../services/adviceslip/index.js';
 import DataBase from '../../dataBase/index.js';
+import { postText } from '../../services/translate/index.js';
 
 export const getList = async payload => {
   const instance = DataBase.getInstance().data.request();
@@ -143,11 +144,12 @@ export const randomMessage = async payload => {
 
         const resultInsert = await instance.query(queryInsert);
         if (resultInsert.rowsAffected[0] === 1) {
+          const returnTranslte = await postText(resultMessage.messageRandom);
           return {
             status: 'success',
             message: 'Mensagem buscada com sucesso',
             document: {
-              ptBr: resultMessage.messageRandom,
+              ptBr: returnTranslte,
               en: resultMessage.messageRandom,
             },
           };
