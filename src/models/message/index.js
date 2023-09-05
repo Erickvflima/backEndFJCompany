@@ -20,7 +20,6 @@ export const getList = async payload => {
   }
   instance.input('status', payload.status);
 
-  console.log(query);
   const { recordset, rowsAffected } = await instance.query(query);
 
   return {
