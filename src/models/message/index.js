@@ -1,3 +1,4 @@
+import getMessageAdvice from '.././../services/adviceslip/index.js';
 import DataBase from '../../dataBase/index.js';
 
 export const getList = async payload => {
@@ -107,4 +108,12 @@ export const putMessage = async payload => {
       rowsAffected,
     };
   }
+};
+
+export const randomMessage = async payload => {
+  const result = await getMessageAdvice();
+  return {
+    status: 'success',
+    message: result,
+  };
 };

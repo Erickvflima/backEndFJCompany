@@ -4,6 +4,7 @@ import {
   getList,
   postMessage,
   putMessage,
+  randomMessage,
 } from '../../models/message/index.js';
 import 'dotenv/config';
 import verifyAuthToken from '../../middleware/auth.js';
@@ -25,6 +26,18 @@ const creteValidation = createValidatorMiddleware(newMessageSchema);
 router.get('/list', listValidation, verifyAuthToken, async (req, res) => {
   try {
     const response = await getList(req.query);
+    res.send(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(502).send({
+      status: 'error',
+      message: 'Contate o suporte.',
+    });
+  }
+});
+router.get('/randomMessage', verifyAuthToken, async (req, res) => {
+  try {
+    const response = await randomMessage(req.query);
     res.send(response);
   } catch (error) {
     console.log(error);
