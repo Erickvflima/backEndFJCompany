@@ -118,11 +118,10 @@ export const randomMessage = async payload => {
   instance.input('userId', payload.id);
 
   const resultCount = await instance.query(queryCountSelect);
-  console.log(resultCount);
 
   if (resultCount.recordset[0].count > 3) {
     return {
-      status: 'error',
+      status: 'success',
       message: 'quantidade de menssagens por dia ja esgotado.',
       rowsAffected: resultCount.recordset[0].count,
     };
