@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import puppeteer from 'puppeteer';
 import {
   deleteMessage,
   getList,
@@ -7,11 +6,23 @@ import {
   putMessage,
 } from '../../models/message/index.js';
 import 'dotenv/config';
-// import { postTeam } from '../../models/team/index.js';
+import verifyAuthToken from '../../middleware/auth.js';
+import {
+  listMessageSchema,
+  changeMessageSchema,
+  deleteMessageSchema,
+  newMessageSchema,
+} from './schemaValidation.js';
+import createValidatorMiddleware from '../../middleware/createValidatorMiddleware.js';
 
 const router = Router();
 
-router.get('/list', async (req, res) => {
+const listValidation = createValidatorMiddleware(listMessageSchema);
+const deleteValidation = createValidatorMiddleware(deleteMessageSchema);
+const changeValidation = createValidatorMiddleware(changeMessageSchema);
+const creteValidation = createValidatorMiddleware(newMessageSchema);
+
+router.get('/list', listValidation, verifyAuthToken, async (req, res) => {
   try {
     const response = await getList(req.query);
     res.send(response);
@@ -24,7 +35,7 @@ router.get('/list', async (req, res) => {
   }
 });
 
-router.delete('/', async (req, res) => {
+router.delete('/', deleteValidation, verifyAuthToken, async (req, res) => {
   try {
     const response = await deleteMessage(req.query);
     res.send(response);
@@ -37,20 +48,25 @@ router.delete('/', async (req, res) => {
   }
 });
 
-router.put('/changeMessage', async (req, res) => {
-  try {
-    const response = await putMessage(req.query);
-    res.send(response);
-  } catch (error) {
-    console.log(error);
-    return res.status(502).send({
-      status: 'error',
-      message: 'Contate o suporte.',
-    });
-  }
-});
+router.put(
+  '/changeMessage',
+  changeValidation,
+  verifyAuthToken,
+  async (req, res) => {
+    try {
+      const response = await putMessage(req.query);
+      res.send(response);
+    } catch (error) {
+      console.log(error);
+      return res.status(502).send({
+        status: 'error',
+        message: 'Contate o suporte.',
+      });
+    }
+  },
+);
 
-router.post('/new', async (req, res) => {
+router.post('/new', creteValidation, verifyAuthToken, async (req, res) => {
   try {
     const response = await postMessage(req.query);
     res.send(response);

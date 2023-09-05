@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add puppeteer-core
+  /usr/local/bin/node /usr/local/bin/yarn add joi
 
 PATH: 
   /opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Applications/oracle/client/instantclient_19_3:/Applications/oracle/client/instantclient_19_3::/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/usr/local/go/bin:/Library/Apple/usr/bin:/usr/local/oracle/lib/oracle/11.2/client64:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Applications/oracle/client/instantclient_19_3
@@ -40,8 +40,7 @@ npm manifest:
       "jsonwebtoken": "^9.0.2",
       "mssql": "^9.2.0",
       "nodemon": "^3.0.1",
-      "prettier": "^3.0.3",
-      "puppeteer": "^21.1.1"
+      "prettier": "^3.0.3"
     },
     "devDependencies": {
       "@babel/core": "^7.22.11",
@@ -3824,7 +3823,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.0.tgz#f67fa67c94da8f4d0cfff981aee4118064199b8f"
     integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
   
-  puppeteer-core@21.1.1:
+  puppeteer-core@21.1.1, puppeteer-core@^21.1.1:
     version "21.1.1"
     resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-21.1.1.tgz#59be20b6f69acc2139ba2d9e02a33793b59254ff"
     integrity sha512-Tlcajcf44zwfa9Sbwv3T8BtaNMJ69wtpHIxwl2NOBTyTK3D1wppQovXTjfw0TDOm3a16eCfQ+5BMi3vRQ4kuAQ==
