@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import http from 'http';
-
+import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 
@@ -17,8 +17,8 @@ app.use(
     methods: '*',
   }),
 );
-// app.use(bodyParser.urlencoded({ extended: true, limit: '150mb' }));
-// app.use(bodyParser.json({ limit: '150mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '150mb' }));
+app.use(bodyParser.json({ limit: '150mb' }));
 // app.use(compression());
 // app.use(logMiddleware);
 app.use(router);
