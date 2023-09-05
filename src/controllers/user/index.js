@@ -8,6 +8,7 @@ import {
 } from '../../models/user/index.js';
 import 'dotenv/config';
 import { postTeam } from '../../models/team/index.js';
+import verifyAuthToken from '../../middleware/auth.js';
 
 const router = Router();
 
@@ -92,7 +93,7 @@ router.post(
     }
   },
 );
-router.get('/list', async (req, res) => {
+router.get('/list', verifyAuthToken, async (req, res) => {
   try {
     const response = await getList(req.query);
     res.send(response);
@@ -105,7 +106,7 @@ router.get('/list', async (req, res) => {
   }
 });
 
-router.patch('/changeData', async (req, res) => {
+router.patch('/changeData', verifyAuthToken, async (req, res) => {
   try {
     const response = await patchUser(req.query.cpf, req.query);
     res.send(response);

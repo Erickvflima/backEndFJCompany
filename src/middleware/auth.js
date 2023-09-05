@@ -1,11 +1,13 @@
 /* eslint-disable consistent-return */
 import jwt from 'jsonwebtoken';
-import HttpException from '../exceptions/HttpException.js';
 
 const verifyAuthToken = (req, res, next) => {
   try {
     if (!process.env.ACCESS_TOKEN_SECRET) {
-      throw new HttpException(403, 'Token not found');
+      res.send({
+        status: 'error',
+        message: 'erro inesperado',
+      });
     }
     const authHeader = req.headers.authorization;
     const currentToken = authHeader && authHeader.split(' ')[1];
@@ -32,4 +34,4 @@ const verifyAuthToken = (req, res, next) => {
   }
 };
 
-export default { verifyAuthToken };
+export default verifyAuthToken;

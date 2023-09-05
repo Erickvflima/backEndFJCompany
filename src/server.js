@@ -19,15 +19,11 @@ app.use(
 );
 app.use(bodyParser.urlencoded({ extended: true, limit: '150mb' }));
 app.use(bodyParser.json({ limit: '150mb' }));
-// app.use(compression());
-// app.use(logMiddleware);
 app.use(router);
-// app.disable('x-powered-by');
+app.disable('x-powered-by');
 app.use('/api/v1', router);
 app.get('*', notFoundHandler);
-// app.use(errorMiddleware);
 
 http.createServer(app).listen(process.env.HTTPPORT, () => {
-  // eslint-disable-next-line no-console
   console.log(`HTTP server is running in ${process.env.HTTPPORT}`);
 });
