@@ -7,7 +7,7 @@ import {
   postSignup,
 } from '../../models/user/index.js';
 import 'dotenv/config';
-import { postTeam } from '../../models/team/index.js';
+import { getListTeam, postTeam } from '../../models/team/index.js';
 import verifyAuthToken from '../../middleware/auth.js';
 import { signinSchema, listUsersSchema } from './schemaValidation.js';
 import createValidatorMiddleware from '../../middleware/createValidatorMiddleware.js';
@@ -61,16 +61,23 @@ router.post(
         const response = await postSignup(req.query);
         res.send(response);
       } else if (req.query.typeOfAccess === 'Lider') {
-        // somente administrador podera criar lider
         if (req.query.nameTeam && req.query.statusTeam) {
-          const resultTeam = await postTeam({
-            name: req.query.nameTeam,
-            status: req.query.statusTeam,
-          });
+          const result = await getListTeam({ name: req.query.nameTeam });
+          if (result.rowsAffected[0] === 0) {
+            const resultTeam = await postTeam({
+              name: req.query.nameTeam,
+              status: req.query.statusTeam,
+            });
 
-          req.query.teamId = resultTeam.document[0].id;
-          const response = await postSignup(req.query);
-          res.send(response);
+            req.query.teamId = resultTeam.document[0].id;
+            const response = await postSignup(req.query);
+            res.send(response);
+          } else {
+            res.send({
+              status: 'error',
+              message: 'Nome da equipe ja cadastrado.',
+            });
+          }
         } else {
           res.status(402).send({
             status: 'error',

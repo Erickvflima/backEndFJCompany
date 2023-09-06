@@ -1,6 +1,6 @@
 import DataBase from '../../dataBase/index.js';
 
-export const getList = async payload => {
+export const getListTeam = async payload => {
   const instance = DataBase.getInstance().data.request();
 
   let query = 'SELECT * FROM "team"';
@@ -27,9 +27,25 @@ export const getList = async payload => {
   };
 };
 
+export const deleteList = async payload => {
+  const instance = DataBase.getInstance().data.request();
+
+  const query = `delete from team where nameTeam = @nameTeam;`;
+
+  instance.input('nameTeam', payload.nameTeam);
+  const { recordset, rowsAffected } = await instance.query(query);
+
+  return {
+    status: 'success',
+    message: 'Registro deletado com sucesso.',
+    document: recordset,
+    rowsAffected,
+  };
+};
+
 export const postTeam = async ({ name, status }) => {
   const instance = DataBase.getInstance().data.request();
-  const validNameTeam = await getList({ name: name });
+  const validNameTeam = await getListTeam({ name: name });
 
   if (validNameTeam.rowsAffected[0] === 1) {
     return {
@@ -45,7 +61,7 @@ export const postTeam = async ({ name, status }) => {
 
   const { rowsAffected } = await instance.query(query);
 
-  const resultTeam = await getList({ name: name });
+  const resultTeam = await getListTeam({ name: name });
 
   if (rowsAffected[0] === 1) {
     return {
