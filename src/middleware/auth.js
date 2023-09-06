@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 import jwt from 'jsonwebtoken';
 
 const verifyAuthToken = (req, res, next) => {
@@ -18,18 +17,15 @@ const verifyAuthToken = (req, res, next) => {
 
     jwt.verify(currentToken, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
       if (error) {
-        // Encaminhe o erro para o próximo middleware de tratamento de erros
         return next(error);
       }
       if (user) {
-        // Continue para o próximo middleware
         next();
       } else {
         res.sendStatus(403);
       }
     });
   } catch (error) {
-    // Encaminhe o erro para o próximo middleware de tratamento de erros
     next(error);
   }
 };
