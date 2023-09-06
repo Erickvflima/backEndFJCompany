@@ -1,8 +1,8 @@
 import { Router } from 'express';
+import jwt from 'jsonwebtoken';
 import { getListTeam } from '../../models/team/index.js';
 import 'dotenv/config';
 import { postTeam } from '../../models/team/index.js';
-import verifyAuthToken from '../../middleware/auth.js';
 
 const router = Router();
 
@@ -18,7 +18,7 @@ router.get('/list', async (req, res) => {
     });
   }
 });
-router.post('/new', verifyAuthToken, async (req, res) => {
+router.post('/new', async (req, res) => {
   try {
     const response = await postTeam({
       name: req.query.name,
